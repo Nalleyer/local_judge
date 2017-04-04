@@ -1,0 +1,39 @@
+Add 2
+===
+
+given 2 integers, return sum of them
+
+input format
+===
+
+The first line contains a, the fiset integer.
+The second line contains b, the fiset integer.
+
+constaints
+===
+-Max <= a,b <= Max where
+    Max = 1,000,000,000
+
+output format
+===
+
+single line witch contains the sum of a and b.
+
+
+sample input
+===
+
+-8
+100
+
+sample output
+===
+
+92
+
+explanation
+===
+
+a=-8
+b=100
+a+b=92

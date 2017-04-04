@@ -1,0 +1,116 @@
+#!/bin/bash
+
+######################################
+# a simple local judge script
+# by nalleyer 2017
+# read readme for details
+######################################
+
+function usage {
+    echo "USAGE: judge [DIR_NAME] | all"
+}
+
+function compile {
+    case $1 in
+    cpp)
+        g++ solution.cpp -o a.out -std=c++11
+        ;;
+    c)
+        gcc solution.c -o a.out
+        ;;
+    esac
+}
+
+function doTests {
+    runCode=$@
+    timeout=1
+    cd tests
+    numTest=`ls *.in | wc -l`
+    sCount=0
+# run
+    for t in *.in ; do
+        testName=${t%%.*}
+        output=$testName".o.g"
+        result=$testName".o"
+# clear last result
+        if [ -e $output ] ; then
+            rm $output;
+        fi
+        fullRunCode="cat $t | timeout $timeout $runCode > $output"
+        eval $fullRunCode
+# when timeout, thiemout returns 124
+        if [ $? -eq 124 ]; then
+            rm $output
+        fi
+# diff
+        if [ -e $output ] ; then
+            if cmp -s $output $result ; then
+                ((sCount++))
+                printf "    [$sCount/$numTest]"
+                echo "$testName passed"
+            else
+                echo "$testName failed"
+            fi
+        else
+            echo "$testName timeout"
+        fi
+    done
+    echo ">>> $sCount of $numTest passed"
+}
+
+function really_judge {
+    problem=$1
+    cd $1
+    solution=`ls | grep solution | head -n 1`
+    if [ -z $solution ] ; then
+        echo no solution in $1
+        return
+    fi
+    filetype="${solution##*.}"
+    echo ">>> testing $dir, type: $filetype"
+# compile if possible
+    compile $filetype
+# generate runcode
+    case $filetype in
+    cpp)
+        runCode="../a.out"
+        ;;
+    c)
+        runCode="../a.out"
+        ;;
+    py)
+        runCode="python3 ../solution.py"
+        ;;
+    pl)
+        runCode="perl ../solution.pl"
+        ;;
+    p6)
+        runCode="perl6 ../solution.p6"
+        ;;
+    hs)
+        runCode="runhaskell ../solution.hs"
+        ;;
+    esac
+    doTests $runCode
+    cd ..
+}
+
+function judge {
+    problem=$1
+# check dir
+    if [ -d $1 ]; then
+        really_judge $1
+    fi
+}
+
+if [ $# -eq 1 ]; then
+    if [ $1 == "all" ]; then
+        for dir in * ; do
+            judge $dir
+        done
+    else
+        judge $1
+    fi
+else
+    usage
+fi
