@@ -30,8 +30,8 @@ function doTests {
 # run
     for t in *.in ; do
         testName=${t%%.*}
-        output=$testName".o.g"
-        result=$testName".o"
+        output=$testName".out.g"
+        result=$testName".out"
 # clear last result
         if [ -e $output ] ; then
             rm $output;
@@ -50,9 +50,9 @@ function doTests {
                 echo "$testName passed"
             else
                 echo "$testName failed. expected:"
-                cat $output
-                echo "your result:"
                 cat $result
+                echo "your result:"
+                cat $output
             fi
         else
             echo "$testName timeout"
