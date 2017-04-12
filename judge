@@ -49,7 +49,10 @@ function doTests {
                 printf "    [$sCount/$numTest]"
                 echo "$testName passed"
             else
-                echo "$testName failed"
+                echo "$testName failed. expected:"
+                cat $output
+                echo "your result:"
+                cat $result
             fi
         else
             echo "$testName timeout"
